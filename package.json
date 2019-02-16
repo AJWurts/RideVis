@@ -1,0 +1,24 @@
+{
+  "name": "datavis_4",
+  "version": "1.0.0",
+  "description": "Data vis project",
+  "main": "GetActivities.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajwurts/04-remix.git"
+  },
+  "author": "Alexander Wurts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajwurts/04-remix/issues"
+  },
+  "homepage": "https://github.com/ajwurts/04-remix#readme"
+}
