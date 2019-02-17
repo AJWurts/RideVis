@@ -1,4 +1,4 @@
-,year,month,weekNumber,distance,total_elevation_gain,elapsed_time,pr_count,average_speed,average_watts,average_temp,count
+gr,year,month,weekNumber,distance,total_elevation_gain,elapsed_time,pr_count,average_speed,average_watts,average_temp,count
 0,2015,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
 1,2016,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
 2,2017,0,2.4,22749.7,129.0,12742.0,4.0,3.3162,99.16666666666667,0.0,5.0
