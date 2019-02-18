@@ -1,2 +1,6 @@
 Tsne - used to find neihboorhoods of similar data
 umap
+
+
+Google Scholar
+XKCD comic

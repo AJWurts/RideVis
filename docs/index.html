@@ -245,7 +245,7 @@
 
     function drawGraph(reloadAll) {
         var data = getData().filter(d => d.year === options.year)
-        var other = (options.time === 'monthly' ? weekly : monthly).filter(d => d.year === options.year);
+        // var other = (options.time === 'monthly' ? weekly : monthly).filter(d => d.year === options.year);
 
         let maxVal = d3.max(data, x => getY(x))
         yScale.domain([0, Math.max(maxVal, goals[options.units][options.time]) + 100])
@@ -291,35 +291,37 @@
             .call(yAxis)
 
 
-        var dataBars = svg.selectAll('dataBars')
-            .data(data)
-            .enter()
-            .append('rect')
-            .attr('class', d => {
-                var className = 'delete month' + d.month.toFixed(0) + " year" + d.year;
-                if (options.time === 'weekly') {
-                    className += ' weekNumber' + d.weekNumber;
-                }
-                return className;
-            })
-            .attr('x', d => {
-                if (options.time === 'monthly') {
-                    return xScale(d.month);
-                } else {
-                    return xScale(d.weekNumber);
-                }
-
-            })
-            .attr('width', d => {
-                if (options.time === 'weekly') {
-                    return (width * 0.9) / 52 - 3
-                }
-                return (width * 0.9) / 12 - 3
-            })
         if (reloadAll) {
-            dataBars
+            var dataBars = svg
+                .selectAll('.data-bar')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('class', d => {
+                    var className = 'data-bars delete month' + d.month.toFixed(0) + " year" + d.year;
+                    if (options.time === 'weekly') {
+                        className += ' weekNumber' + d.weekNumber;
+                    }
+                    return className;
+                })
+                .attr('x', d => {
+                    if (options.time === 'monthly') {
+                        return xScale(d.month);
+                    } else {
+                        return xScale(d.weekNumber);
+                    }
+
+                })
+                .attr('width', d => {
+                    if (options.time === 'weekly') {
+                        return (width * 0.9) / 52 - 3
+                    }
+                    return (width * 0.9) / 12 - 3
+                })
                 .attr('y', d => height * 0.8)
                 .attr('height', 0)
+        } else {
+            var dataBars = d3.selectAll('.data-bars')
                 .attr('x', d => {
                     if (options.time === 'monthly') {
                         return xScale(d.month);
@@ -334,58 +336,22 @@
                     }
                     return (width * 0.9) / 12 - 3
                 })
-        } else if (options.time === 'weekly') {
-
-            dataBars
-                .attr('y', d => other)
-                .attr('height', 0)
-                .attr('x', d => {
-                    if (options.time === 'monthly') {
-                        return xScale(d.month);
-                    } else {
-                        return xScale(d.weekNumber);
-                    }
-
-                })
-                .attr('width', d => {
-                    if (options.time === 'weekly') {
-                        return (width * 0.9) / 52 - 3
-                    }
-                    return (width * 0.9) / 12 - 3
-                })
-        } else if (options.time === 'monthly') {
-            dataBars
-                .attr('y', d => height * 0.8)
-                .attr('height', 0)
-                .attr('x', d => {
-                    if (options.time === 'monthly') {
-                        return xScale(d.month);
-                    } else {
-                        return xScale(d.weekNumber);
-                    }
-
-                })
-                .attr('width', d => {
-                    if (options.time === 'weekly') {
-                        return (width * 0.9) / 52 - 3
-                    }
-                    return (width * 0.9) / 12 - 3
-                })
-
         }
 
-        dataBars.style("fill", "url(#linear-gradient)")
+        dataBars
+            .style("fill", "url(#linear-gradient)")
             .transition()
             .duration(500)
             .attr('y', getYScaled)
             .attr('height', d => height * 0.8 - getYScaled(d))
 
 
+        svg.selectAll('.selectionBars').remove()
         svg.selectAll('selectionBars')
             .data(data)
             .enter()
             .append('rect')
-            .attr('class', 'delete')
+            .attr('class', 'delete selectionBars')
             .attr('x', d => {
                 if (options.time === 'monthly') {
                     return xScale(d.month);
