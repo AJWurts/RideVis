@@ -209,7 +209,7 @@
             .style('font-family', fontFamily)
             .attr("x", width * 0.05)
             .attr("y", height * 0.81)
-            .attr('font-size', 10)
+            .attr('font-size', 12)
             .style("text-anchor", "middle")
             .attr('fill', 'black')
             .text(getUnits);
@@ -231,7 +231,7 @@
             .enter()
             .append('rect')
             .attr('class', d => {
-                var className = 'delete month' + d.month + " year" + d.year;
+                var className = 'delete month' + d.month.toFixed(0) + " year" + d.year;
                 if (options.time === 'weekly') {
                     className += ' weekNumber' + d.weekNumber;
                 }
@@ -330,13 +330,12 @@
 
     function onBarHover(d) {
         if (options.time === 'monthly') {
-            d3.selectAll('.year' + d.year).filter(" .month" + d.month.toFixed(0))
-                .style('fill', '#009CE0')
+            var comp = d3.selectAll('.year' + d.year).filter(" .month" + d.month.toFixed(0))
 
         } else {
-            d3.selectAll('.year' + d.year).filter(" .month" + d.month.toFixed(0)).filter(' .weekNumber' + d.weekNumber)
-                .style('fill', '#009CE0')
+            var comp = d3.selectAll('.year' + d.year).filter(" .month" + d.month.toFixed(0)).filter(' .weekNumber' + d.weekNumber)
         }
+        comp.style('fill', '#00c0E0')
 
         d3.select('#distance-label')
             .text(d.distance.toFixed(1) + 'mi');
