@@ -87,33 +87,81 @@
 
     var monthly = [];
 
+    //linear-gradient(#009CE0, #0070A0);
+    var colorRange = ['#009CE0', '#0070A0']
+
+    var color = d3.scaleLinear().range(colorRange).domain([1, 2]);
+
+    var linearGradient = svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "linear-gradient")
+        .attr("gradientTransform", "rotate(90)");
 
 
+    linearGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", color(1));
 
+    linearGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", color(2));
 
 
     // Top of graph labels on hover
+
+    svg.append('text')
+        .style('font-family', fontFamily)
+        .attr('y', height * 0.1)
+        .attr('x', width / 2 - 250)
+        .text('Total:')
+
     svg.append('text')
         .style('font-family', fontFamily)
         .attr('id', 'distance-label')
         .attr('y', height * 0.1)
-        .attr('x', width / 2 - 75)
+        .attr('x', width / 2 - 200)
         .text('0.0mi')
 
     svg.append('text')
         .style('font-family', fontFamily)
-
         .attr('id', 'time-label')
         .attr('y', height * 0.1)
-        .attr('x', width / 2)
+        .attr('x', width / 2 - 125)
         .text('0h 0m')
 
     svg.append('text')
         .attr('id', 'elevation-label')
         .style('font-family', fontFamily)
         .attr('y', height * 0.1)
-        .attr('x', width / 2 + 75)
+        .attr('x', width / 2 - 50)
         .text('0ft')
+
+    svg.append('text')
+        .style('font-family', fontFamily)
+        .attr('y', height * 0.1)
+        .attr('x', width / 2 + 100)
+        .text('Avg:')
+
+    svg.append('text')
+        .attr('id', 'temp-label')
+        .style('font-family', fontFamily)
+        .attr('y', height * 0.1)
+        .attr('x', width / 2 + 150)
+        .text('0F')
+
+    svg.append('text')
+        .attr('id', 'power-label')
+        .style('font-family', fontFamily)
+        .attr('y', height * 0.1)
+        .attr('x', width / 2 + 225)
+        .text('0w')
+
+    svg.append('text')
+        .attr('id', 'speed-label')
+        .style('font-family', fontFamily)
+        .attr('y', height * 0.1)
+        .attr('x', width / 2 + 275)
+        .text('0mph')
 
     function onElevationClick() {
         console.log("Monthly")
@@ -351,31 +399,21 @@
         d3.select('#elevation-label')
             .text(numberWithCommas(d.total_elevation_gain.toFixed(0)) + 'ft');
 
+        d3.select('#power-label')
+            .text(d.average_watts > 0 ? d.average_watts.toFixed(0) + 'w' : "No Data")
+
+        d3.select('#temp-label')
+            .text(d.average_temp !== 0 ? d.average_temp.toFixed(1) + 'F' : "No Data")
+
+        d3.select('#speed-label') 
+            .text(d.average_speed.toFixed(1) + 'mph')
+
     }
 
     function onBarOut(d) {
         d3.selectAll('.year' + d.year).filter(" .month" + d.month.toFixed(0))
             .style("fill", "url(#linear-gradient)")
     }
-
-    //linear-gradient(#009CE0, #0070A0);
-    var colorRange = ['#009CE0', '#0070A0']
-
-    var color = d3.scaleLinear().range(colorRange).domain([1, 2]);
-
-    var linearGradient = svg.append("defs")
-        .append("linearGradient")
-        .attr("id", "linear-gradient")
-        .attr("gradientTransform", "rotate(90)");
-
-
-    linearGradient.append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", color(1));
-
-    linearGradient.append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", color(2));
 
 
 
@@ -384,62 +422,6 @@
         .then(result => {
             console.log(result)
             monthly = result;
-            // result = result.filter(d => d.year === 2017)
-
-            // let maxDist = d3.max(result, x => x.distance)
-            // console.log(maxDist)
-            // yScale.domain([0, Math.max(maxDist, distanceGoal) + 100])
-
-            // result = result.sort((a, b) => a.month - b.month)
-
-            // var yAxis = d3.axisLeft(yScale)
-            //     .ticks(10)
-
-            // var xAxis = d3.axisBottom(timeScale)
-            //     .tickFormat(d3.timeFormat("%b"));
-
-            // svg.append('g')
-            //     .attr("transform", "translate(0," + (height * 0.8) + ")")
-            //     .call(xAxis)
-
-
-            // svg.append('g')
-            //     .attr('transform', "translate(" + (width * 0.1) + ",0)")
-            //     .call(yAxis)
-
-
-            // svg.selectAll('dataBars')
-            //     .data(result)
-            //     .enter()
-            //     .append('rect')
-            //     .attr('class', d => 'month' + d.month + " year" + d.year)
-            //     .attr('y', d => height * 0.8)
-            //     .attr('x', d => xScale(d.month))
-            //     .attr('width', (width * 0.9) / 12 - 3)
-            //     .attr('height', 0)
-            //     .style("fill", "url(#linear-gradient)")
-            //     .transition()
-            //     .duration(500)
-            //     .attr('y', d => yScale(d.distance))
-            //     .attr('height', d => height * 0.8 - yScale(d.distance))
-
-
-
-            // svg.selectAll('selectionBars')
-            //     .data(result)
-            //     .enter()
-            //     .append('rect')
-            //     .attr('x', d => xScale(d.month))
-            //     .attr('y', d => height * 0.2)
-            //     .attr('width', (width * 0.9) / 12 - 3)
-            //     .attr('height', height * 0.6)
-            //     .attr('fill', '#00000000')
-            //     .on('mouseover', onBarHover)
-            //     .on('mouseout', onBarOut)
-
-
-            // addLineWithLabel(maxDist, 'Max Dist', '#000000DD')
-            // addLineWithLabel(distanceGoal, 'Goal', '#000000DD')
             drawGraph()
         })
 
