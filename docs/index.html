@@ -10,14 +10,14 @@
         <svg id='vis'></svg></br>
         <div style="display: inline-block;  width: 100%">
             <span class='custom-menu'>
-                Year:
-                <select onchange=onYearClick(event) >
-                    <option value="2015">2015</option>
-                    <option value="2016">2016</option>
-                    <option value="2017">2017</option>
-                    <option value="2018">2018</option>
-                    <option value="2019">2019</option>
-                </select>
+                <button onclick=onChangeYear(-1) class='arrow-button'>
+                    -1
+                </button>
+                Year: <span id='yearText'>2015</span>
+                <button onclick=onChangeYear(1) class='arrow-button'>
+                    +1
+                </button>
+
             </span>
             <button onclick=onTimeClick() class='custom-buttom'>
                 Time
@@ -55,7 +55,6 @@
         .range([width * 0.1, width])
 
     var timeScale = d3.scaleTime()
-        .domain([new Date(2015, 0, 1), new Date(2019, 11, 31)])
         .range([width * 0.1, width]);
 
     var yScale = d3.scaleLinear()
@@ -160,12 +159,18 @@
         .attr('id', 'speed-label')
         .style('font-family', fontFamily)
         .attr('y', height * 0.1)
-        .attr('x', width / 2 + 275)
+        .attr('x', width / 2 + 285)
         .text('0mph')
 
-    function onYearClick(event) {
+    function onChangeYear(dir) {
         console.log(event.target.selectedIndex)
-        options.year = 2015 + +event.target.selectedIndex;
+        if (dir === -1 && options.year > 2015) {
+            options.year -= 1
+        } else if (dir === 1 && options.year < 2019) {
+            options.year += 1
+        }
+        document.getElementById('yearText').innerHTML = options.year
+        // options.year = 2015 + +event.target.selectedIndex;
         drawGraph();
     }
 
@@ -246,6 +251,7 @@
         console.log(maxVal)
         yScale.domain([0, Math.max(maxVal, goals[options.units][options.time]) + 100])
         xScale.domain([0, options.time === 'monthly' ? 12 : 52])
+        timeScale.domain([new Date(options.year, 0, 1), new Date(options.year, 11, 31)])
         data = data.sort((a, b) => options.time === 'monthly' ? a.month - b.month : a.weekNumber - b.weekNumber)
 
         d3.selectAll('.delete').remove()
@@ -412,7 +418,7 @@
         d3.select('#temp-label')
             .text(d.average_temp !== 0 ? d.average_temp.toFixed(1) + 'F' : "No Data")
 
-        d3.select('#speed-label') 
+        d3.select('#speed-label')
             .text(d.average_speed.toFixed(1) + 'mph')
 
     }
