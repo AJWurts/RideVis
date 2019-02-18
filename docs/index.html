@@ -245,14 +245,14 @@
 
     function drawGraph(reloadAll) {
         var data = getData().filter(d => d.year === options.year)
-   
-        console.log(data)
+        var other = (options.time === 'monthly' ? weekly : monthly).filter(d => d.year === options.year);
+
         let maxVal = d3.max(data, x => getY(x))
-        console.log(maxVal)
         yScale.domain([0, Math.max(maxVal, goals[options.units][options.time]) + 100])
         xScale.domain([0, options.time === 'monthly' ? 12 : 52])
         timeScale.domain([new Date(options.year, 0, 1), new Date(options.year, 11, 31)])
         data = data.sort((a, b) => options.time === 'monthly' ? a.month - b.month : a.weekNumber - b.weekNumber)
+
         if (reloadAll) {
             d3.selectAll('.delete').remove()
         }
@@ -335,6 +335,25 @@
                     return (width * 0.9) / 12 - 3
                 })
         } else if (options.time === 'weekly') {
+
+            dataBars
+                .attr('y', d => other)
+                .attr('height', 0)
+                .attr('x', d => {
+                    if (options.time === 'monthly') {
+                        return xScale(d.month);
+                    } else {
+                        return xScale(d.weekNumber);
+                    }
+
+                })
+                .attr('width', d => {
+                    if (options.time === 'weekly') {
+                        return (width * 0.9) / 52 - 3
+                    }
+                    return (width * 0.9) / 12 - 3
+                })
+        } else if (options.time === 'monthly') {
             dataBars
                 .attr('y', d => height * 0.8)
                 .attr('height', 0)
@@ -352,6 +371,7 @@
                     }
                     return (width * 0.9) / 12 - 3
                 })
+
         }
 
         dataBars.style("fill", "url(#linear-gradient)")

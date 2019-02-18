@@ -1,0 +1,2 @@
+Tsne - used to find neihboorhoods of similar data
+umap
