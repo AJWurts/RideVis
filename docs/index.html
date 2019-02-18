@@ -7,19 +7,18 @@
 
 <body>
     <div>
-        <!-- <ul id="totals">
-            <li  class='totals-list'>
-                <strong>606.3<abbr class="unit" title="miles">mi</abbr></strong>
-            </li>
-            <li  class='totals-list'>
-                <strong>35<abbr class="unit" title="hour">h</abbr> 23<abbr class="unit" title="minute">m</abbr></strong>
-            </li>
-            <li   class='totals-list'>
-                <strong>21,645<abbr class="unit" title="feet">ft</abbr></strong>
-            </li>
-        </ul> -->
         <svg id='vis'></svg></br>
-        <div style="display: inline-block;  margin: 0px 0px 0px 150px; width: 100%">
+        <div style="display: inline-block;  width: 100%">
+            <span class='custom-menu'>
+                Year:
+                <select onchange=onYearClick(event) >
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                </select>
+            </span>
             <button onclick=onTimeClick() class='custom-buttom'>
                 Time
             </button class='custom-buttom'>
@@ -29,7 +28,7 @@
             <button onclick=onElevationClick() class='custom-buttom'>
                 Elevation
             </button>
-            <button onclick=onWeeklyClick() class='custom-buttom' style="margin: 0px 0px 0px 50px">
+            <button onclick=onWeeklyClick() style="margin: 0px 0px 0px 100px" class='custom-buttom'>
                 Weekly
             </button>
             <button onclick=onMonthlyClick() class='custom-buttom'>
@@ -80,6 +79,7 @@
 
 
     var options = {
+        year: 2015,
         time: 'monthly',
         units: 'distance'
     }
@@ -111,6 +111,12 @@
         .style('font-family', fontFamily)
         .attr('y', height * 0.1)
         .attr('x', width / 2 + 75)
+
+    function onYearClick(event) {
+        console.log(event.target.selectedIndex)
+        options.year = 2015 + +event.target.selectedIndex;
+        drawGraph();
+    }
 
     function onElevationClick() {
         console.log("Monthly")
@@ -182,13 +188,13 @@
     }
 
     function drawGraph() {
-        var data = getData()//.filter(d => d.year === 2017)
-        
+        var data = getData().filter(d => d.year === options.year)
+
         console.log(data)
         let maxVal = d3.max(data, x => getY(x))
         console.log(maxVal)
         yScale.domain([0, Math.max(maxVal, goals[options.units][options.time]) + 100])
-        xScale.domain([0, options.time === 'monthly' ? 12 * 4 : 52])
+        xScale.domain([0, options.time === 'monthly' ? 12 : 52])
         data = data.sort((a, b) => options.time === 'monthly' ? a.month - b.month : a.weekNumber - b.weekNumber)
 
         d3.selectAll('.delete').remove()
@@ -251,7 +257,7 @@
                 if (options.time === 'weekly') {
                     return (width * 0.9) / 52 - 3
                 }
-                return (width * 0.9) / (12 * 4) - 3
+                return (width * 0.9) / 12 - 3
             })
             .attr('height', 0)
             .style("fill", "url(#linear-gradient)")
@@ -276,9 +282,9 @@
             .attr('y', d => height * 0.2)
             .attr('width', d => {
                 if (options.time === 'weekly') {
-                    return (width * 0.9) / 52 - 3
+                    return (width * 0.9) / 52
                 }
-                return (width * 0.9) / 12 - 3
+                return (width * 0.9) / 12
             })
             .attr('height', height * 0.6)
             .attr('fill', '#00000000')
@@ -377,67 +383,9 @@
 
 
 
-
     d3.json("https://ajwurts.github.io/datavis_4/rides_by_month.json")
         .then(result => {
-            console.log(result)
             monthly = result;
-            // result = result.filter(d => d.year === 2017)
-
-            // let maxDist = d3.max(result, x => x.distance)
-            // console.log(maxDist)
-            // yScale.domain([0, Math.max(maxDist, distanceGoal) + 100])
-
-            // result = result.sort((a, b) => a.month - b.month)
-
-            // var yAxis = d3.axisLeft(yScale)
-            //     .ticks(10)
-
-            // var xAxis = d3.axisBottom(timeScale)
-            //     .tickFormat(d3.timeFormat("%b"));
-
-            // svg.append('g')
-            //     .attr("transform", "translate(0," + (height * 0.8) + ")")
-            //     .call(xAxis)
-
-
-            // svg.append('g')
-            //     .attr('transform', "translate(" + (width * 0.1) + ",0)")
-            //     .call(yAxis)
-
-
-            // svg.selectAll('dataBars')
-            //     .data(result)
-            //     .enter()
-            //     .append('rect')
-            //     .attr('class', d => 'month' + d.month + " year" + d.year)
-            //     .attr('y', d => height * 0.8)
-            //     .attr('x', d => xScale(d.month))
-            //     .attr('width', (width * 0.9) / 12 - 3)
-            //     .attr('height', 0)
-            //     .style("fill", "url(#linear-gradient)")
-            //     .transition()
-            //     .duration(500)
-            //     .attr('y', d => yScale(d.distance))
-            //     .attr('height', d => height * 0.8 - yScale(d.distance))
-
-
-
-            // svg.selectAll('selectionBars')
-            //     .data(result)
-            //     .enter()
-            //     .append('rect')
-            //     .attr('x', d => xScale(d.month))
-            //     .attr('y', d => height * 0.2)
-            //     .attr('width', (width * 0.9) / 12 - 3)
-            //     .attr('height', height * 0.6)
-            //     .attr('fill', '#00000000')
-            //     .on('mouseover', onBarHover)
-            //     .on('mouseout', onBarOut)
-
-
-            // addLineWithLabel(maxDist, 'Max Dist', '#000000DD')
-            // addLineWithLabel(distanceGoal, 'Goal', '#000000DD')
             drawGraph()
         })
 
