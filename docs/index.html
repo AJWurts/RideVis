@@ -19,7 +19,7 @@
             </li>
         </ul> -->
         <svg id='vis'></svg></br>
-        <div style="display: inline-block;  margin: 0px 0px 0px 150px; width: 50%">
+        <div style="display: inline-block;  margin: 0px 0px 0px 150px; width: 100%">
             <button onclick=onTimeClick() class='custom-buttom'>
                 Time
             </button class='custom-buttom'>
@@ -46,7 +46,7 @@
     var width = 750
     var height = 250
     var svg = d3.select('body').select('#vis')
-        .attr('width', width + 300)
+        .attr('width', width + 150)
         .attr('height', height)
 
     var fontFamily = '-apple-system, system-ui, BlinkMacSystemFont, Roboto, "Segoe UI", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
@@ -56,7 +56,7 @@
         .range([width * 0.1, width])
 
     var timeScale = d3.scaleTime()
-        .domain([new Date(2018, 0, 1), new Date(2018, 11, 31)])
+        .domain([new Date(2015, 0, 1), new Date(2019, 11, 31)])
         .range([width * 0.1, width]);
 
     var yScale = d3.scaleLinear()
@@ -182,12 +182,13 @@
     }
 
     function drawGraph() {
-        var data = getData().filter(d => d.year === 2017)
+        var data = getData()//.filter(d => d.year === 2017)
+        
         console.log(data)
         let maxVal = d3.max(data, x => getY(x))
         console.log(maxVal)
         yScale.domain([0, Math.max(maxVal, goals[options.units][options.time]) + 100])
-        xScale.domain([0, options.time === 'monthly' ? 12 : 52])
+        xScale.domain([0, options.time === 'monthly' ? 12 * 4 : 52])
         data = data.sort((a, b) => options.time === 'monthly' ? a.month - b.month : a.weekNumber - b.weekNumber)
 
         d3.selectAll('.delete').remove()
@@ -250,7 +251,7 @@
                 if (options.time === 'weekly') {
                     return (width * 0.9) / 52 - 3
                 }
-                return (width * 0.9) / 12 - 3
+                return (width * 0.9) / (12 * 4) - 3
             })
             .attr('height', 0)
             .style("fill", "url(#linear-gradient)")
