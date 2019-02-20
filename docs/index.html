@@ -312,9 +312,9 @@
             })
             .attr('width', d => {
                 if (options.time === 'weekly') {
-                    return (width * 0.9) / 52 - 3
+                    return (width * 0.9) / data.length - 3
                 }
-                return (width * 0.9) / 12 - 3
+                return (width * 0.9) / data.length - 3
             })
             .attr('height', 0)
             .style("fill", "url(#linear-gradient)")
@@ -428,7 +428,9 @@
             .style("fill", "url(#linear-gradient)")
     }
 
+    function onClickBar(d) {
 
+    }
 
     d3.json("https://ajwurts.github.io/datavis_4/rides_by_month.json")
         .then(result => {
@@ -441,4 +443,6 @@
         .then(result => {
             weekly = result;
         })
+    
+    d3.json("https://ajwurts.github.io/datavis_4/rides.json")
 </script>
