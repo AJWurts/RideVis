@@ -440,9 +440,12 @@
         let selectedMonth = d.month
         var selectedRides = rides
             .filter(r => r.year === d.year)
-            .filter(r => r.month === d.month)
+            .sort((a, b) => +a.start_date.dateString.split('T')[0].split('-')[2] - +b.start_date.dateString.split('T')[0].split('-')[2])
         if (options.time === 'weekly') {
             selectedRides = selectedRides.filter(r => r.weekNumber === d.weekNumber);
+        } else {
+            selectedRoutes = selectedRoutes.filter(r => r.month === d.month)
+
         }
         d3.selectAll('.single-ride').remove()
 
