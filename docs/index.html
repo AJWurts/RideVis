@@ -255,8 +255,12 @@
         xScale.domain([0, options.time === 'monthly' ? 12 : 52])
         timeScale.domain([new Date(options.year, 0, 1), new Date(options.year, 11, 31)])
         data = data.sort((a, b) => options.time === 'monthly' ? a.month - b.month : a.weekNumber - b.weekNumber)
-
+        
+        // Clear Aggregated Data
         d3.selectAll('.delete').remove()
+        // Clear Individual ride data
+        d3.selectAll('.single-ride').remove()
+
 
         var yAxis = d3.axisLeft(yScale)
             .ticks(10)
@@ -432,16 +436,15 @@
     }
 
     function onClickBar(d) {
-        console.log(d)
 
         let selectedMonth = d.month
         var selectedRides = rides
             .filter(r => r.year === d.year)
-            .filter(r => r.month === r.month)
-        console.log(selectedRides)
+            .filter(r => r.month === d.month)
         if (options.time === 'weekly') {
             selectedRides = selectedRides.filter(r => r.weekNumber === d.weekNumber);
         }
+        d3.selectAll('.single-ride').remove()
 
         for (let i = 0; i < selectedRides.length; i++) {
             drawRoute(selectedRides[i]);
@@ -449,13 +452,30 @@
     }
 
     function drawRoute(r) {
-        console.log(r)
-        d3.select('#rides-view')
+        // console.log(r)
+        var ride = d3.select('#rides-view')
             .append('div')
-            .attr('width', 100)
-            .attr('height', 200)
-            .text(r.distance)
+            .attr('class', 'single-ride')
+            .style('margin', '10px 0px 0px 0px')
+            .style('height', '30px')
 
+        let width = ride._groups[0][0].clientWidth
+
+        // This confusing as hell array converts the data types to statute units 
+        var data = [r.start_date.dateString.split('T')[0], (r.distance / 1609).toFixed(1) + "mi", (r.total_elevation_gain * 3.28083).toFixed(0) + 'ft', (r.average_speed / 1609* 3600).toFixed(1) + 'mph' , r.average_temp === null ? 'null' : (r.average_temp* (9/5) + 32).toFixed(0) + 'F', r.average_watts, (r.moving_time / 3600).toFixed(2) + 'h', r.pr_count]
+
+        // This labels the corresponding ith data
+        var labels = [
+            'Date', 'Distance', 'Elevation Gain', 'Average Speed', 'Avg Temp', 'Avg Watts', 'Moving Time', "PR Count"
+        ]
+
+        ride.selectAll('rideData')
+            .data(data)
+            .enter()
+            .append('span')
+            .attr('class', 'single-ride')
+            .style('margin', '0px 15px 0px 0px')
+            .text((d, i) => labels[i] + ': ' + d)
     }
 
     d3.json("https://ajwurts.github.io/datavis_4/rides_by_month.json")
