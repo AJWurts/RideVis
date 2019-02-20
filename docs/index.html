@@ -438,7 +438,7 @@
         var selectedRides = rides
             .filter(r => r.year === d.year)
             .filter(r => r.month === r.month)
-
+        console.log(selectedRides)
         if (options.time === 'weekly') {
             selectedRides = selectedRides.filter(r => r.weekNumber === d.weekNumber);
         }
