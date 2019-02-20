@@ -35,7 +35,7 @@
                 Monthly
             </button>
         </div>
-
+        <div id='rides-view'></div>
     </div>
 
 
@@ -85,6 +85,8 @@
 
 
     var monthly = [];
+    var weekly = [];
+    var rides = [];
 
     //linear-gradient(#009CE0, #0070A0);
     var colorRange = ['#009CE0', '#0070A0']
@@ -347,6 +349,7 @@
             .attr('fill', '#00000000')
             .on('mouseover', onBarHover)
             .on('mouseout', onBarOut)
+            .on('click', onClickBar)
 
 
         addLineWithLabel(maxVal, 'Max', '#000000DD')
@@ -429,6 +432,29 @@
     }
 
     function onClickBar(d) {
+        console.log(d)
+
+        let selectedMonth = d.month
+        var selectedRides = rides
+            .filter(r => r.year === d.year)
+            .filter(r => r.month === r.month)
+
+        if (options.time === 'weekly') {
+            selectedRides = selectedRides.filter(r => r.weekNumber === d.weekNumber);
+        }
+
+        for (let i = 0; i < selectedRides.length; i++) {
+            drawRoute(selectedRides[i]);
+        }
+    }
+
+    function drawRoute(r) {
+        console.log(r)
+        d3.select('#rides-view')
+            .append('div')
+            .attr('width', 100)
+            .attr('height', 200)
+            .text(r.distance)
 
     }
 
@@ -443,6 +469,10 @@
         .then(result => {
             weekly = result;
         })
-    
+
     d3.json("https://ajwurts.github.io/datavis_4/rides.json")
+        .then(result => {
+            console.log(result)
+            rides = result;
+        })
 </script>
