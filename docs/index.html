@@ -83,6 +83,7 @@
         units: 'distance'
     }
 
+    var clickedRide;
 
     var monthly = [];
     var weekly = [];
@@ -101,11 +102,11 @@
 
     linearGradient.append("stop")
         .attr("offset", "0%")
-        .attr("stop-color", color(1));
+        .attr("stop-color", '#009CE0DD');
 
     linearGradient.append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", color(2));
+        .attr("stop-color", '#0070A0DD');
 
 
     // Top of graph labels on hover
@@ -221,7 +222,7 @@
         if (options.units === 'distance') {
             return d.distance
         } else if (options.units === 'time') {
-            return d.elapsed_time
+            return d.elapsed_time || d.moving_time
         } else if (options.units === 'elevation') {
             return d.total_elevation_gain
         }
@@ -246,6 +247,11 @@
     }
 
     function drawGraph() {
+        if (clickedRide) {
+            onClickBar(clickedRide);
+
+        }
+
         var data = getData().filter(d => d.year === options.year)
 
         console.log(data)
@@ -255,7 +261,7 @@
         xScale.domain([0, options.time === 'monthly' ? 12 : 52])
         timeScale.domain([new Date(options.year, 0, 1), new Date(options.year, 11, 31)])
         data = data.sort((a, b) => options.time === 'monthly' ? a.month - b.month : a.weekNumber - b.weekNumber)
-        
+
         // Clear Aggregated Data
         d3.selectAll('.delete').remove()
         // Clear Individual ride data
@@ -436,7 +442,7 @@
     }
 
     function onClickBar(d) {
-
+        clickedRide = d;
         let selectedMonth = d.month
         var selectedRides = rides
             .filter(r => r.year === d.year)
@@ -444,14 +450,196 @@
         if (options.time === 'weekly') {
             selectedRides = selectedRides.filter(r => r.weekNumber === d.weekNumber);
         } else {
-            selectedRoutes = selectedRoutes.filter(r => r.month === d.month)
+            selectedRides = selectedRides.filter(r => r.month === d.month)
 
         }
-        d3.selectAll('.single-ride').remove()
+        d3.selectAll('.ride-summary').remove()
 
-        for (let i = 0; i < selectedRides.length; i++) {
-            drawRoute(selectedRides[i]);
+        if (selectedRides.length !== 0) {
+            drawRideSummary(selectedRides, d);
+
         }
+    }
+
+    function convertY(y) {
+        if (options.units === 'distance') {
+            return (y / 1609).toFixed(0)
+        } else if (options.units === 'time') {
+            return (y / 3600).toFixed(2)
+        } else if (options.units === 'elevation') {
+            return (y * 3.28083).toFixed(0)
+        }
+    }
+
+    function drawRideSummary(rides, selected) {
+        // What are we gonna do today? Multi view!
+
+        // Scatter plot of distance and elevation gain?
+        // How to summarize the data
+
+        let width = 900;
+        let height = 400
+
+        var ride = d3.select('#rides-view')
+            .append('svg')
+            .attr('class', 'ride-summary')
+            .style('margin', '20px 0px 0px 0px')
+            .attr('width', width)
+            .attr('height', height)
+
+        let maxY = d3.max(rides, getY)
+
+        rides = rides.sort((a, b) => new Date(a.start_date.dateString).getMilliseconds() - new Date(b.start_date.dateString).getMilliseconds)
+
+        let summaryXScale = d3.scaleLinear()
+            .domain([0, rides.length])
+            .range([width * 0.1, width * 0.9])
+
+        let summaryYScale = d3.scaleLinear()
+            .domain([0, maxY])
+            .range([height * 0.9, height * 0.1])
+
+        let labelYScale = d3.scaleLinear()
+            .domain([0, convertY(maxY)])
+            .range([height * 0.9, height * 0.1])
+
+        let startTime = new Date(new Date(rides[0].start_date.dateString).getTime() - (3600000 * 12));
+        let endTime = new Date(new Date(rides[rides.length - 1].start_date.dateString).getTime() + (3600000 * 12))
+        var sumTimeScale = d3.scaleTime()
+            .domain([startTime, endTime])
+            .range([width * 0.1, width * 0.9])
+
+
+        var yAxis = d3.axisLeft(labelYScale)
+            .ticks(10)
+
+        if (options.units === 'time') {
+            yAxis.tickFormat(d => d3.format(".1f")(d))
+        }
+
+        var xAxis = d3.axisBottom(sumTimeScale)
+            .tickFormat(d3.timeFormat("%b %d"));
+
+
+        ride.append('g')
+            .attr("transform", "translate(0," + (height * 0.9) + ")")
+            .attr('class', 'delete')
+            .call(xAxis)
+
+
+        ride.append('g')
+            .attr('transform', "translate(" + (width * 0.1) + ",0)")
+            .attr('class', 'delete')
+            .call(yAxis)
+
+        ride.append("text")
+            .attr('class', 'delete')
+            .style('font-family', fontFamily)
+            .attr("x", width * 0.05)
+            .attr("y", height * 0.81)
+            .attr('font-size', 12)
+            .style("text-anchor", "middle")
+            .attr('fill', 'black')
+            .text(getUnits);
+
+        ride.selectAll('dataBars')
+            .data(rides)
+            .enter()
+            .append('rect')
+            .attr('class', d => {
+                var className = 'delete month' + d.month.toFixed(0) + " year" + d.year;
+                if (options.time === 'weekly') {
+                    className += ' weekNumber' + d.weekNumber;
+                }
+                return className;
+            })
+            .attr('id', d => "date" + d.start_date.dateString)
+            .attr('y', d => height * 0.8)
+            .attr('x', (d, i) => {
+                return sumTimeScale(new Date(d.start_date.dateString))
+
+            })
+            .attr('width', (d, i) => {
+                if (true || i == rides.length - 1) {
+                    let length = new Date(0)
+                    length.setSeconds(d.moving_time);
+                    return sumTimeScale(length) - sumTimeScale(new Date(0));
+
+                    // Math.max(sumTimeScale(new Date().setSeconds(d.moving_time)),
+                    //  sumTimeScale(new Date().setSeconds(10000)));
+                } else {
+                    return sumTimeScale(new Date(rides[i + 1].start_date.dateString)) - sumTimeScale(new Date(rides[i].start_date.dateString))
+
+                }
+            })
+            .attr('height', 0)
+            .style("fill", "url(#linear-gradient)")
+            .transition()
+            .duration(500)
+            .attr('y', d => summaryYScale(getY(d)))
+            .attr('height', d => height * 0.9 - summaryYScale(getY(d)))
+
+
+        ride.selectAll('selectionBars')
+            .data(rides)
+            .enter()
+            .append('rect')
+            .attr('class', 'delete')
+            .attr('id', d => 'date' + d.start_date.dateString)
+            .attr('x', (d, i) => {
+                if (i == 0) {
+                    d.x = summaryXScale(0);
+
+                    return summaryXScale(0);
+                } else {
+                    let cur = new Date(d.start_date.dateString);
+                    let old = new Date(rides[i - 1].start_date.dateString);
+                    let halfDiff = new Date((cur.getTime() - old.getTime()) / 2)
+                    console.log("Half Diff", halfDiff);
+                    let midPoint = new Date(cur.getTime() - halfDiff.getTime());
+                    console.log(midPoint)
+                    d.x = sumTimeScale(midPoint);
+                    return sumTimeScale(midPoint);
+                }
+            })
+            .attr('y', d => height * 0.1)
+            .attr('width', (d, i) => {
+                if (i == rides.length - 1) {
+                    return width * 0.8;
+                } else {
+                    let cur = new Date(d.start_date.dateString);
+                    let next = new Date(rides[i + 1].start_date.dateString);
+                    let halfDiff = new Date((next.getTime() - cur.getTime()) / 2);
+                    let midPoint = new Date(next.getTime() - halfDiff.getTime());
+
+                    return sumTimeScale(midPoint) - d.x;
+                }
+            })
+            .attr('height', height * 0.8)
+            .attr('fill', '#00000000')
+            .on('mouseover', onRideHover)
+            .on('mouseout', onRideOut)
+            .on('click', onRideClick)
+
+
+    }
+
+    function onRideHover(ride) {
+        d3.select('[id="date' + ride.start_date.dateString + '"]')
+            .style('fill', '#00FF00')
+        drawRoute(ride)
+        console.log("On Ride Over", ride);
+    }
+
+    function onRideOut(ride) {
+        d3.select('.single-ride').remove();
+        d3.select('[id="date' + ride.start_date.dateString + '"]')
+            .style("fill", "url(#linear-gradient)")
+        console.log("On Ride Out", ride);
+    }
+
+    function onRideClick(ride) {
+        console.log(ride);
     }
 
     function drawRoute(r) {
@@ -465,7 +653,7 @@
         let width = ride._groups[0][0].clientWidth
 
         // This confusing as hell array converts the data types to statute units 
-        var data = [r.start_date.dateString.split('T')[0], (r.distance / 1609).toFixed(1) + "mi", (r.total_elevation_gain * 3.28083).toFixed(0) + 'ft', (r.average_speed / 1609* 3600).toFixed(1) + 'mph' , r.average_temp === null ? 'null' : (r.average_temp* (9/5) + 32).toFixed(0) + 'F', r.average_watts, (r.moving_time / 3600).toFixed(2) + 'h', r.pr_count]
+        var data = [r.start_date.dateString.split('T')[0], (r.distance / 1609).toFixed(1) + "mi", (r.total_elevation_gain * 3.28083).toFixed(0) + 'ft', (r.average_speed / 1609 * 3600).toFixed(1) + 'mph', r.average_temp === null ? 'null' : (r.average_temp * (9 / 5) + 32).toFixed(0) + 'F', r.average_watts, (r.moving_time / 3600).toFixed(2) + 'h', r.pr_count]
 
         // This labels the corresponding ith data
         var labels = [
