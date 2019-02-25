@@ -1,10 +1,6 @@
 # Data Visualization Assignment 4
-Alexaner Wurts
-
-## New Visualization
-[New Vis](https://ajwurts.github.io/datavis_4)
-![newvis](img/full_new.png)
-The visualization looks at three different variables for all of my bicycle rides for a given year aggregated by weeks or months. They can look at the rides through total time, distance, or elevation. At the top of the graph is the summary data for the bar being hovered over. The top left shows the summation. The top right side shows the average. A secondary visual is opened when the user clicks any one of the months or weeks to look at the rides that make up that time period. In the secondary visual the width of the bar represents the length of the ride, and the height is based off which variable they currently have selected. When the user hovers over a bar in the secondary visual a line of text appears with the details for that ride. 
+by Alexander Wurts  
+[Visualization Link](https://ajwurts.github.io/datavis_4)
 
 ## Original Visualization
 ![original_im](img/original_monthly.png)
@@ -16,9 +12,12 @@ The original visualization is missing a few key features.
     * Users are able to set a weekly or monthly goal, but this graph doesn't show it.
 3. Doesn't visualize the routes within a week effectively. It displays a list of routes instead of utilizing a visual component. When searching for a ride it makes it much more difficult find.
 
+## New Visualization
+![newvis](img/full_new.png)
+The visualization looks at three different variables for all of my bicycle rides for a given year aggregated by weeks or months. They can look at the rides through total time, distance, or elevation. At the top of the graph is the summary data for the bar being hovered over. The top left shows the summation. The top right side shows the average. A secondary visual is opened when the user clicks any one of the months or weeks to look at the rides that make up that time period. In the secondary visual the width of the bar represents the length of the ride, and the height is based off which variable they currently have selected. When the user hovers over a bar in the secondary visual a line of text appears with the details for that ride. 
 
 ## Technical Achievement
-I used the Strava API to download all of my athletic activities for the past 4 years and processed them in Python with the libraries Numpy and Pandas. I transformed the data in 3 data sets: grouped by month, grouped by week, and all rides in a reduced size. Code for the pre-processing is visible in the jupyter notebook.   
+I used the Strava API to download all of my athletic activities for the past 4 years and processed them in Python with the libraries Numpy and Pandas. I transformed the data in 3 data sets: grouped by month, grouped by week, and all rides in a reduced size. Code for the pre-processing is available in the python folder in the jupyter notebook.  
 When you click on the chart it brings up a smaller chart to visualize the rides that make up the larger chart. On the smaller chart I added hover over that automatically highlights the closest ride to make it more easy to hover over any given ride.
 
 ## Design Achievement 
