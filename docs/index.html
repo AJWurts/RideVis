@@ -42,6 +42,8 @@
 </body>
 
 <script>
+    const baseURL = "https://www.strava.com/activities/"
+
     var width = 750
     var height = 250
     var svg = d3.select('body').select('#vis')
@@ -630,6 +632,8 @@
     }
 
     function onRideClick(ride) {
+        window.open(baseURL + ride.id, "_blank")
+        console.log(ride)
     }
 
     function drawRoute(r) {
