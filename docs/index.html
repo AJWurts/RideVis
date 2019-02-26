@@ -13,7 +13,7 @@
                 <button onclick=onChangeYear(-1) class='arrow-button'>
                     -1
                 </button>
-                Year: <span id='yearText'>2015</span>
+                Year: <span id='yearText'>2017</span>
                 <button onclick=onChangeYear(1) class='arrow-button'>
                     +1
                 </button>
@@ -78,7 +78,7 @@
 
 
     var options = {
-        year: 2015,
+        year: 2017,
         time: 'monthly',
         units: 'distance'
     }
@@ -616,6 +616,8 @@
     function onRideHover(ride) {
         d3.select('[id="date' + ride.start_date.dateString + '"]')
             .style('fill', '#00FF00')
+            .attr('stroke', '#00FF00')
+            .attr('stroke-width', 3)
         drawRoute(ride)
     }
 
@@ -623,6 +625,8 @@
         d3.select('.single-ride').remove();
         d3.select('[id="date' + ride.start_date.dateString + '"]')
             .style("fill", "url(#linear-gradient)")
+            .attr('stroke', '#00000000')
+            .attr('stroke-width', 3)
     }
 
     function onRideClick(ride) {
