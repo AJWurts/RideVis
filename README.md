@@ -1,6 +1,6 @@
 # Data Visualization Assignment 4
 by Alexander Wurts  
-[Visualization Link](https://ajwurts.github.io/datavis_4)
+[Visualization Link](https://ajwurts.github.io/RideVis/)
 
 ## Original Visualization
 ![original_im](img/original_monthly.png)
