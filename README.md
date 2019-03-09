@@ -1,4 +1,4 @@
-# Data Visualization Assignment 4
+# RideVis
 by Alexander Wurts  
 [Visualization Link](https://ajwurts.github.io/RideVis/)
 
