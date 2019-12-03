@@ -662,19 +662,19 @@
             .text((d, i) => labels[i] + ': ' + d)
     }
 
-    d3.json("https://alexwurts.com/datavis_4/rides_by_month.json")
+    d3.json("http://alexwurts.com/datavis_4/rides_by_month.json")
         .then(result => {
             monthly = result;
             drawGraph()
         })
 
 
-    d3.json("https://alexwurts.com/datavis_4/rides_by_week.json")
+    d3.json("http://alexwurts.com/datavis_4/rides_by_week.json")
         .then(result => {
             weekly = result;
         })
 
-    d3.json("https://alexwurts.com/datavis_4/rides.json")
+    d3.json("http://alexwurts.com/datavis_4/rides.json")
         .then(result => {
             rides = result;
         })
