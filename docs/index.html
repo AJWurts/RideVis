@@ -248,7 +248,8 @@
 
         }
 
-        var data = getData().filter(d => d.year === options.year)
+        var data = getData().filter(d => d.year === options.year)   
+
 
         let maxVal = d3.max(data, x => getY(x))
         yScale.domain([0, Math.max(maxVal, goals[options.units][options.time]) + 100])
@@ -665,6 +666,7 @@
     d3.json("https://alexwurts.com/RideVis/rides_by_month.json")
         .then(result => {
             monthly = result;
+            console.log(result);
             drawGraph()
         })
 
